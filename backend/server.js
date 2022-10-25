@@ -1,49 +1,45 @@
-const express = require('express');
-const { Server } = require('socket.io');
+const express = require("express");
+const { corsConfig } = require("./controllers/serverController");
+const { Server } = require("socket.io");
 const app = express();
-const helmet = require('helmet');
-const cors = require('cors');
-const authRouter = require('./routers/authRouter');
+const helmet = require("helmet");
+const cors = require("cors");
+const authRouter = require("./routers/authRouter");
 const recordRouter = require('./routers/recordRouter');
-const session = require('express-session');
-const server = require('http').createServer(app);
-require('dotenv').config();
+const pool = require("./db");
+const redisClient = require("./redis");
+const server = require("http").createServer(app);
+const authorizeUser = require("./controllers/authorizeUser");
+// const initializeUser = require("./controllers/initializeUser");
 
 const io = new Server(server, {
-  cors: {
-    origin: 'http://localhost:3000',
-    credentials: 'true',
-  },
+  cors: corsConfig,
 });
 
 app.use(helmet());
-app.use(
-  cors({
-    origin: 'http://localhost:3000',
-    credentials: true,
-  })
-);
+app.use(cors(corsConfig));
 app.use(express.json());
-app.use(
-  session({
-    secret: process.env.COOKIE_SECRET,
-    credentials: true,
-    name: 'sid',
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      secure: process.env.ENVIRONMENT === 'production' ? 'true' : 'auto',
-      httpOnly: true,
-      expires: 1000 * 60 * 60 * 24 * 7,
-      sameSite: process.env.ENVIRONMENT === 'production' ? 'none' : 'lax',
-    },
-  })
-);
-app.use('/auth', authRouter);
+app.use("/auth", authRouter);
 app.use('/tracing', recordRouter);
+app.set("trust proxy", 1); //???
 
-io.on('connect', (socket) => {});
+io.use(authorizeUser); //???
+
+io.on("connect", socket => {
+  //initializeUser(socket);
+});
 
 server.listen(4000, () => {
-  console.log('Server listening on port 4000');
+  console.log("Server listening on port 4000");
 });
+
+const resetEverythingInterval = 1000 * 60 * 15; // 15 minutes, to be chagned
+
+setInterval(() => {
+  
+  if (process.env.NODE_ENV !== "production") {
+    return;
+  }
+  pool.query("DELETE FROM users u where u.username != $1", ["lester"]);
+  redisClient.flushall();
+}, resetEverythingInterval);

@@ -26,7 +26,7 @@ const SignUp = () => {
       onSubmit={(values, actions) => {
         const vals = { ...values };
         actions.resetForm();
-        fetch("http://localhost:4000/auth/signup", {
+        fetch("http://localhost:4000/auth/signup", { //to be changed
           method: "POST",
           credentials: "include",
           headers: {
@@ -52,6 +52,7 @@ const SignUp = () => {
             if (data.status) {
               setError(data.status);
             } else if (data.loggedIn) {
+              localStorage.setItem("token", data.token);
               navigate("/home");
             }
           });

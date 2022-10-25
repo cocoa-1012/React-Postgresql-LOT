@@ -1,6 +1,6 @@
 import { Button, ButtonGroup, Heading, VStack } from "@chakra-ui/react";
-import { Formik } from "formik";
-import TextField from "../TextField";
+import { Form, Formik } from "formik";
+import TextField from "../../TextField";
 import * as Yup from "yup";
 import { useState } from "react";
 
@@ -10,14 +10,14 @@ export default function PersonalInfoForm() {
   return (
     <Formik
       initialValues={{ name: "Lok Ke Wen", nric: "*****563D", address: "50 Tuas Ave 11 #03-38 Tuas Lot S(639107)", phoneno: "87651289", email: "kewen@test.com", password: "heello W0rkd!" }}
-        validationSchema={Yup.object({
-          username: Yup.string()
-            .required("Username required!")
-            .min(6, "Username too short!"),
-          password: Yup.string()
-            .required("Password required!")
-            .min(12, "Password too short!"),
-        })}
+      validationSchema={Yup.object({
+        username: Yup.string()
+          .required("Username required!")
+          .min(6, "Username too short!"),
+        password: Yup.string()
+          .required("Password required!")
+          .min(12, "Password too short!"),
+      })}
       
       onSubmit={(values, actions) => {
         const vals = { ...values };
@@ -44,6 +44,7 @@ export default function PersonalInfoForm() {
         });
         }}>
       <VStack
+        as={Form}
         w={'100%'}
         spacing="1rem"
       >

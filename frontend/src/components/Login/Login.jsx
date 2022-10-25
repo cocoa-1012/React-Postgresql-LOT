@@ -1,4 +1,4 @@
-import { Alert, AlertIcon, Button, ButtonGroup, Heading, VStack } from "@chakra-ui/react";
+import { Button, ButtonGroup, Text, Heading, VStack } from "@chakra-ui/react";
 import { Form, Formik } from "formik";
 import { useNavigate } from "react-router";
 import { useContext, useState } from "react";
@@ -9,10 +9,8 @@ import TextField from "../TextField";
 const Login = () => {
   const { setUser } = useContext(AccountContext);
   const [error, setError] = useState(null);
-  const [showError, setShowError] = useState(false);
   const navigate = useNavigate();
   return (
-    <>
       <Formik
         initialValues={{ username: "", password: "" }}
         validationSchema={Yup.object({
@@ -27,7 +25,7 @@ const Login = () => {
         onSubmit={(values, actions) => {
           const vals = { ...values };
           actions.resetForm();
-          fetch("http://localhost:4000/auth/login", {
+          fetch("http://localhost:4000/auth/login", { //to be changed
             method: "POST",
             credentials: "include",
             headers: {
@@ -49,8 +47,8 @@ const Login = () => {
               setUser({ ...data });
               if (data.status) {
                 setError(data.status);
-                setShowError(true);
               } else if (data.loggedIn) {
+                localStorage.setItem("token", data.token);
                 navigate("/home");
               }
             });
@@ -65,6 +63,9 @@ const Login = () => {
           spacing="1rem"
         >
           <Heading>Log In</Heading>
+          <Text as="p" color="red.500">
+            {error}
+          </Text>
           <TextField
             name="username"
             placeholder="Enter username"
@@ -84,18 +85,12 @@ const Login = () => {
             <Button colorScheme="teal" type="submit">
               Log In
             </Button>
-            <Button onClick={() => navigate("/register")}>Create Account</Button>
+            <Button onClick={() => navigate("/register")}>
+              Create Account
+            </Button>
           </ButtonGroup>
         </VStack>
       </Formik>
-      { showError 
-      ? (<Alert status='error'>
-          <AlertIcon />
-          {error}
-        </Alert>
-      ) : null
-      }
-    </>
   );
 };
 

@@ -6,7 +6,7 @@ const bcrypt = require('bcrypt');
 
 router.get('/records', async (req, res) => {
   try {
-    const records = await pool.query('SELECT * from tracingrecords');
+    const records = await pool.query('SELECT * from tracingRecords');
 
     return res.status(200).json(records.rows);
   } catch (error) {

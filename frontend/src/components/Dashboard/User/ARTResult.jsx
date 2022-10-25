@@ -32,10 +32,10 @@ export default function ARTResult() {
         </Table>
       </TableContainer>
       <ButtonGroup pt="1rem" m={"20px 0"} w={"100%"} justifyContent={"center"}>
-          <Button colorScheme="teal" type="button">
-            Upload Test Result
-          </Button>
-        </ButtonGroup>
+        <Button colorScheme="teal" type="button">
+          Upload Test Result
+        </Button>
+      </ButtonGroup>
     </>
   );
 }
